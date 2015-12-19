@@ -543,6 +543,13 @@ abstract class AbstractExtendedPdoTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(3, count($res));
     }
 
+    public function testNumberedPlaceholderMissing()
+    {
+        $this->setExpectedException('Aura\Sql\Exception\\MissingParameter');
+        $stm = "SELECT id, name FROM pdotest WHERE id = ? OR id = ?";
+        $this->pdo->fetchOne($stm, array(1));
+    }
+
     public function testZeroIndexedPlaceholders()
     {
         $stm = 'SELECT * FROM pdotest WHERE id IN (?, ?, ?)';
@@ -588,6 +595,11 @@ abstract class AbstractExtendedPdoTest extends \PHPUnit_Framework_TestCase
 
         // float (also not a special type)
         $sth = $this->pdo->prepareWithValues($stm, array('id' => 1.23));
+        $this->assertInstanceOf('PDOStatement', $sth);
+
+        // object with __toString()
+        $obj = new FakeObject(1.23);
+        $sth = $this->pdo->prepareWithValues($stm, array('id' => $obj));
         $this->assertInstanceOf('PDOStatement', $sth);
 
         // non-bindable

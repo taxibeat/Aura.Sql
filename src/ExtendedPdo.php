@@ -1022,6 +1022,10 @@ class ExtendedPdo extends PDO implements ExtendedPdoInterface
             return $sth->bindValue($key, $val, self::PARAM_NULL);
         }
 
+        if (is_object($val) && method_exists($val, '__toString')) {
+            return $sth->bindValue($key,(string) $val, self::PARAM_STR);
+        }
+
         if (! is_scalar($val)) {
             $type = gettype($val);
             throw new Exception\CannotBindValue(

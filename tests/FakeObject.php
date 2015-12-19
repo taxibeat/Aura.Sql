@@ -9,4 +9,9 @@ class FakeObject
     {
         $this->foo = $foo;
     }
+
+    public function __toString()
+    {
+        return (string) $this->foo;
+    }
 }
